@@ -1,0 +1,10 @@
+{
+  "name": "claude-mods",
+  "owner": { "name": "Arunjay", "url": "https://github.com/Arunjay4213" },
+  "metadata": { "description": "Session trackers for Claude Code, built as mods (function hooks): what fills your context, how fast you burn your plan quota, and what each turn costs." },
+  "plugins": [
+    { "name": "context-lens", "source": "./plugins/context-lens", "description": "Live /context: what fills the window, per-turn growth, and distance to auto-compaction." },
+    { "name": "quota-meter", "source": "./plugins/quota-meter", "description": "5-hour and weekly plan limits with reset countdown and projected time until you hit them." },
+    { "name": "token-ledger", "source": "./plugins/token-ledger", "description": "Per-turn cost, tokens and cache hit ratio, with the session total." }
+  ]
+}

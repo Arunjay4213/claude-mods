@@ -1,0 +1,10 @@
+{
+  "name": "token-ledger",
+  "version": "0.1.0",
+  "description": "A per-turn cost and token ledger: a pinned status line with the session cost, the last turn's tokens and the cache hit ratio, and /ledger for a table of the recent turns with their model, tokens, cache reads and writes, duration and cost.",
+  "author": {
+    "name": "Arunjay"
+  },
+  "license": "MIT",
+  "keywords": ["cost", "tokens", "usage", "cache", "ledger", "status-line"]
+}

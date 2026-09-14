@@ -1,0 +1,4 @@
+{
+  "description": "The context lens: a pinned status line with the window fill and per-turn growth, and the /context-lens pane with the per-category bars, refreshed on every finished turn and after a compaction",
+  "modules": ["./register.tsx"]
+}

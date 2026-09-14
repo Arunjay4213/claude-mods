@@ -1,0 +1,4 @@
+{
+  "description": "The token ledger: a pinned status line under the prompt with the session cost and the last turn's tokens, and /ledger opening a pane of the recent turns with tokens, cache hit ratio, duration and cost.",
+  "modules": ["./register.tsx"]
+}

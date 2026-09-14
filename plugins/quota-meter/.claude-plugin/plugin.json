@@ -1,0 +1,10 @@
+{
+  "name": "quota-meter",
+  "version": "0.1.0",
+  "description": "Shows the subscription plan limits - the 5-hour window, the 7-day window and a gateway spend limit - as a pinned status line under the prompt, with a reset countdown and a projection of when you would hit 100% at the pace of the last few samples. /quota opens a pane with a bar, the reset clock time and the burn rate for each window.",
+  "author": {
+    "name": "Arunjay"
+  },
+  "license": "MIT",
+  "keywords": ["quota", "rate-limit", "usage", "status", "pane"]
+}

@@ -1,0 +1,4 @@
+{
+  "description": "The quota meter: a pinned status line with the plan limit windows and their reset countdown, a /quota pane drawing a bar, reset clock time and burn rate per window, samples taken after each turn and on a 60 second tick",
+  "modules": ["./register.tsx"]
+}

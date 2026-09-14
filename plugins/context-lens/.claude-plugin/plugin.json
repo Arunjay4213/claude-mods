@@ -1,0 +1,10 @@
+{
+  "name": "context-lens",
+  "version": "0.1.0",
+  "description": "A live /context: a pinned line under the prompt with the window fill and the growth per turn, and /context-lens for a pane with the per-category bars and how many turns are left before auto-compaction.",
+  "author": {
+    "name": "Arunjay"
+  },
+  "license": "MIT",
+  "keywords": ["context", "tokens", "compaction", "status-line", "pane"]
+}
