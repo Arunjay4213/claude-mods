@@ -196,11 +196,9 @@ export const overTextOf = (figure: Figure, what: string): string =>
  * A deny and a drop reach the model and the transcript unnamed, so these two
  * carry the plugin's name themselves.
  */
-export const denyTextOf = (figure: Figure): string =>
-  `${figure.label} ${figure.valueText} passed the ${figure.limitText} limit, so the turn was stopped. ` +
+export const denyReasonOf = (figure: Figure): string =>
+  `budget-guard: ${figure.label} ${figure.valueText} passed the ${figure.limitText} limit, so the turn was stopped. ` +
   `/guard override allows the next turn; ${raiseHintOf(figure)} raises the limit.`
-
-export const denyReasonOf = (figure: Figure): string => `budget-guard: ${denyTextOf(figure)}`
 
 export const dropReasonOf = (figure: Figure): string =>
   `budget-guard: ${overTextOf(figure, 'The prompt was not sent. /guard override sends the next one;')}`

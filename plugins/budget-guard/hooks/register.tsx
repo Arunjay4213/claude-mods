@@ -5,7 +5,6 @@ import {
   actionOf,
   DEFAULTS,
   denyReasonOf,
-  denyTextOf,
   dropReasonOf,
   figuresOf,
   firstOver,
@@ -248,19 +247,13 @@ export const register: Register = (on, options) => {
 
     // Refusing one call is not enough: the model answers a refusal by trying
     // another tool, and every try is an API call that costs money, so the turn
-    // is ended too. The stop waits a moment so the refusal is recorded first,
-    // and the reason is written as a transcript line of its own, because a
-    // stopped turn shows only "Interrupted" where the refusal would have been.
+    // is ended too. The stop waits a moment so the refusal, with its reason, is
+    // recorded in the transcript first; stopped at once, the transcript would
+    // show only "Interrupted" where the refusal belongs.
     const reason = denyReasonOf(over)
     const running = turnId
     if (running !== null && stoppingTurnId !== running) {
       stoppingTurnId = running
-      try {
-        // the engine puts the plugin's name in front of a log line itself
-        $.ui.log(denyTextOf(over))
-      } catch {
-        // the refusal below still carries the reason
-      }
       try {
         $.clock.after(250, () => {
           void quietly(() => $.turn.abort({ turnId: running }))
