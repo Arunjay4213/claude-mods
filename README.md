@@ -4,7 +4,7 @@ Three session trackers for Claude Code, built as mods.
 A mod is a Claude Code plugin whose behaviour is TypeScript running inside Claude Code's engine (the feature Anthropic calls function hooks).
 Each one keeps a figure on screen that you otherwise have to run a command to see.
 
-![The /quota pane and its pinned status line in a Claude Code session](plugins/quota-meter/docs/quota-meter.png)
+![The three mods updating after a turn, then the /ledger and /quota panes](docs/demo.gif)
 
 | Mod | Pinned line under the prompt | Pane command |
 | --- | --- | --- |
