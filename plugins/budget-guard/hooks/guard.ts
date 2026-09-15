@@ -40,13 +40,17 @@ export function settingsOf(base: Settings, raw: unknown): Settings {
   if (typeof raw !== 'object' || raw === null) return base
   const held = raw as Record<string, unknown>
 
+  // a settings file edited by hand may hold "5" or "false"; they mean 5 and false
   const num = (field: Field, was: number): number => {
-    const value = held[field]
+    const raw = held[field]
+    const value = typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : raw
     return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : was
   }
 
   const mode = held['mode']
-  const enabled = held['enabled']
+  const rawEnabled = held['enabled']
+  const enabled =
+    rawEnabled === 'true' ? true : rawEnabled === 'false' ? false : rawEnabled
 
   return {
     costLimitUsd: num('costLimitUsd', base.costLimitUsd),

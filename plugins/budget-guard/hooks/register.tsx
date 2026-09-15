@@ -62,6 +62,8 @@ let readMs = 0
 let readAtMs = 0
 /** The running main turn, so a refusal can end it instead of leaving the model to retry. */
 let turnId: string | null = null
+/** True from the main turn's start to its end; a turn.start inside that span is a subagent's. */
+let isMainTurnOpen = false
 /** The turn already being stopped, so several refusals in one turn stop it once. */
 let stoppingTurnId: string | null = null
 
@@ -218,7 +220,10 @@ export const register: Register = (on, options) => {
 
     // the override covers one turn of the main loop; a subagent's turn ending
     // inside it must not take the override away from the turn that set it
-    if (e.agentId === undefined) isOverridden = false
+    if (e.agentId === undefined) {
+      isOverridden = false
+      isMainTurnOpen = false
+    }
 
     await refresh($, true)
 
@@ -267,7 +272,12 @@ export const register: Register = (on, options) => {
   })
 
   on('turn.start', async ($, e, next) => {
-    turnId = e.turnId
+    // turn.start names no agent, so the first start after the main turn ended
+    // is the main turn's; any start before it ends again is a subagent's
+    if (!isMainTurnOpen) {
+      isMainTurnOpen = true
+      turnId = e.turnId
+    }
     return next(e)
   })
 
