@@ -87,8 +87,9 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir plugins/context-lens
 
 ## Limitations
 
-- The per-category bars need `$.session.usage({ breakdown })`. Claude Code 2.1.270 answers that call with only `tokens`, `window` and `percent` and no `breakdown` key, for `"summary"` and `"full"` alike, so on that build the pane draws the window bar and says so in place of the category rows. The category code is there and lights up on a build that serves the breakdown.
-- On that same build there is no `autoCompactThreshold` to read, so the headroom is measured against the whole window and the `limit` row says the threshold was not reported. The turn estimate is then optimistic by whatever the compaction buffer is.
+- The per-category bars need `$.session.usage({ breakdown })`.
+Claude Code 2.1.272 and later answer it with the categories and the auto-compaction threshold, and the pane draws them.
+Claude Code 2.1.270 and earlier answer with only `tokens`, `window` and `percent`, so on those builds the pane draws the window bar alone, says so in place of the category rows, and measures headroom against the whole window.
 - `tokens` and `percent` come from the last API response, so a fresh or just-compacted session has no reading until its next answer.
 - The turns estimate is a straight line through the recent turns that grew. One large file read moves it a long way; it is a rough guide, not a forecast.
 - The pane is placed by the engine: docked beside the transcript in the fullscreen layout from 110 columns, inline above the prompt otherwise. Inline it gets about a third of the screen, so a long category list scrolls.

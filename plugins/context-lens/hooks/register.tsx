@@ -247,7 +247,7 @@ export const register: Register = on => {
 
     // label, bar, tokens, percent. The bar takes what is left, and stops growing past
     // BAR_MAX so a docked pane on a wide screen does not draw a bar the width of the screen.
-    const labelW = Math.min(16, Math.max(7, columns - 26))
+    const labelW = Math.min(19, Math.max(7, columns - 26))
     const barW = Math.min(BAR_MAX, Math.max(4, columns - labelW - 14))
     const { last, average, over } = growth()
     const left = turnsLeft(average)
