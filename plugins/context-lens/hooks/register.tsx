@@ -137,12 +137,9 @@ async function forget($: EngineInterface): Promise<void> {
   history = []
   awaitingReading = true
   await read($, 'summary')
-  // read() may have set snap again; the cast tells the type checker so.
-  const fresh = snap as Snapshot | null
-  if (fresh) {
-    history = [fresh.used]
-    awaitingReading = false
-  }
+  // read() may have set snap again; the cast tells the type checker so. The
+  // growth history restarts from the next finished turn, as at session start.
+  if ((snap as Snapshot | null) !== null) awaitingReading = false
   show($)
 }
 
@@ -158,8 +155,10 @@ export const register: Register = on => {
     } catch (error) {
       $.ui.log(`context-lens: /${COMMAND} not registered: ${String(error)}`)
     }
+    // The reading at start is the engine's estimate of the window; the growth
+    // history starts from the first finished turn, so a real count is never
+    // compared against an estimate.
     await read($, 'summary')
-    if (snap) history = [snap.used]
     show($)
     return result
   })
