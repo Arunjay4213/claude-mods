@@ -70,7 +70,7 @@ Or set it for one run: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`.
 
 ## Screenshot
 
-<!-- screenshot: docs/budget-guard.png -->
+![The refused tool call, the /guard state, and the pinned line](docs/budget-guard.png)
 
 ## `/guard`
 
