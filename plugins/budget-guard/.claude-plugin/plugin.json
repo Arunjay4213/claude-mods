@@ -1,0 +1,56 @@
+{
+  "name": "budget-guard",
+  "version": "0.1.0",
+  "description": "Stops a session before it runs past a budget. Three figures are guarded, each with a limit you set: the session cost in dollars, the 5-hour plan window and the 7-day plan window. It says nothing until a figure nears its limit, then pins a status line and warns once; past the limit it refuses tool calls and asks before sending another prompt. /guard shows the state and changes the limits.",
+  "author": {
+    "name": "Arunjay"
+  },
+  "license": "MIT",
+  "keywords": ["budget", "cost", "rate-limit", "guard", "quota"],
+  "userConfig": {
+    "costLimitUsd": {
+      "type": "number",
+      "title": "Session cost limit (USD)",
+      "description": "Dollars this session may spend before the guard acts. 0 turns the cost guard off.",
+      "default": 0,
+      "min": 0
+    },
+    "fiveHourLimitPercent": {
+      "type": "number",
+      "title": "5-hour window limit (%)",
+      "description": "Percent of the 5-hour plan window the guard allows. 0 turns this guard off.",
+      "default": 90,
+      "min": 0,
+      "max": 100
+    },
+    "sevenDayLimitPercent": {
+      "type": "number",
+      "title": "7-day window limit (%)",
+      "description": "Percent of the 7-day plan window the guard allows. 0 turns this guard off.",
+      "default": 95,
+      "min": 0,
+      "max": 100
+    },
+    "warnAtPercent": {
+      "type": "number",
+      "title": "Warn at (% of a limit)",
+      "description": "How far along a limit a figure has to be before the guard warns about it.",
+      "default": 80,
+      "min": 1,
+      "max": 100
+    },
+    "mode": {
+      "type": "string",
+      "title": "Mode",
+      "description": "block refuses tool calls once a limit is passed. warn only says so.",
+      "default": "block",
+      "options": ["block", "warn"]
+    },
+    "enabled": {
+      "type": "boolean",
+      "title": "Enabled",
+      "description": "Turn the whole guard off without uninstalling it.",
+      "default": true
+    }
+  }
+}

@@ -1,10 +1,32 @@
 {
   "name": "claude-mods",
-  "owner": { "name": "Arunjay", "url": "https://github.com/Arunjay4213" },
-  "metadata": { "description": "Session trackers for Claude Code, built as mods (function hooks): what fills your context, how fast you burn your plan quota, and what each turn costs." },
+  "owner": {
+    "name": "Arunjay",
+    "url": "https://github.com/Arunjay4213"
+  },
+  "metadata": {
+    "description": "Session trackers and a budget guard for Claude Code, built as mods (function hooks): what fills your context, how fast you burn your plan quota, what each turn costs, and a stop before you pass a limit you set."
+  },
   "plugins": [
-    { "name": "context-lens", "source": "./plugins/context-lens", "description": "Live /context: what fills the window, per-turn growth, and distance to auto-compaction." },
-    { "name": "quota-meter", "source": "./plugins/quota-meter", "description": "5-hour and weekly plan limits with reset countdown and projected time until you hit them." },
-    { "name": "token-ledger", "source": "./plugins/token-ledger", "description": "Per-turn cost, tokens and cache hit ratio, with the session total." }
+    {
+      "name": "context-lens",
+      "source": "./plugins/context-lens",
+      "description": "Live /context: what fills the window, per-turn growth, and distance to auto-compaction."
+    },
+    {
+      "name": "quota-meter",
+      "source": "./plugins/quota-meter",
+      "description": "5-hour and weekly plan limits with reset countdown and projected time until you hit them."
+    },
+    {
+      "name": "token-ledger",
+      "source": "./plugins/token-ledger",
+      "description": "Per-turn cost, tokens and cache hit ratio, with the session total."
+    },
+    {
+      "name": "budget-guard",
+      "source": "./plugins/budget-guard",
+      "description": "Stops a session before it runs past a budget: warns near a cost or plan-window limit, then refuses tool calls and asks before the next prompt."
+    }
   ]
 }

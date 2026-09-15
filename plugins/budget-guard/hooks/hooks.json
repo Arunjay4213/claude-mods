@@ -1,0 +1,4 @@
+{
+  "description": "The budget guard: a limit on the session cost in dollars and on the 5-hour and 7-day plan windows, warned once at 80% of a limit, refused past it with a deny on every tool call and a question before the next prompt, all changed from /guard",
+  "modules": ["./register.tsx"]
+}

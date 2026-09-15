@@ -1,6 +1,6 @@
 # claude-mods
 
-Three session trackers for Claude Code, built as mods.
+Three session trackers and a budget guard for Claude Code, built as mods.
 A mod is a Claude Code plugin whose behaviour is TypeScript running inside Claude Code's engine (the feature Anthropic calls function hooks).
 Each one keeps a figure on screen that you otherwise have to run a command to see.
 
@@ -11,6 +11,7 @@ Each one keeps a figure on screen that you otherwise have to run a command to se
 | [`context-lens`](plugins/context-lens) | context window used, growth per turn, turns left before compaction | `/context-lens` |
 | [`quota-meter`](plugins/quota-meter) | 5-hour and 7-day plan limits, reset countdown, projected time until the limit | `/quota` |
 | [`token-ledger`](plugins/token-ledger) | session cost, last turn's cost, tokens in and out, cache hit ratio | `/ledger` |
+| [`budget-guard`](plugins/budget-guard) | only while near a limit: cost and plan-window use against the limits you set; past a limit it refuses tool calls and asks before the next prompt | `/guard` |
 
 ## Install
 
@@ -32,6 +33,7 @@ claude plugin marketplace add Arunjay4213/claude-mods
 claude plugin install context-lens@claude-mods
 claude plugin install quota-meter@claude-mods
 claude plugin install token-ledger@claude-mods
+claude plugin install budget-guard@claude-mods
 ```
 
 Restart Claude Code.
