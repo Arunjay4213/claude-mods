@@ -2,7 +2,7 @@
 
 Three session trackers and a budget guard for Claude Code, built as mods.
 A mod is a Claude Code plugin whose behaviour is TypeScript running inside Claude Code's engine (the feature Anthropic calls function hooks).
-Each one keeps a figure on screen that you otherwise have to run a command to see.
+Each one keeps a number on screen that you would otherwise have to run a command to see.
 
 ![The three mods updating after a turn, then the /ledger and /quota panes](docs/demo.gif)
 
@@ -42,7 +42,8 @@ The pinned lines appear after the first answer of the session.
 ## Requirements
 
 - Claude Code 2.1.269 or newer, in an interactive terminal.
-- `quota-meter` needs a Claude subscription (Pro, Max, Team or Enterprise). API-key sessions report no plan limits, so it shows a short note instead.
+- `quota-meter` needs a Claude subscription (Pro, Max, Team or Enterprise).
+  API-key sessions report no plan limits, so it shows a short note instead.
 - The pane docks beside the transcript from 110 columns wide and opens above the prompt on narrower terminals.
 
 ## Try one from source
@@ -56,7 +57,7 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir plugins/token-ledger
 ## Development
 
 Each plugin is `.claude-plugin/plugin.json`, `hooks/hooks.json` naming the module, and TypeScript under `hooks/`.
-The type declarations in `.claude/types/claude-code.d.ts` come from the `/plugin-types` command inside Claude Code; regenerate them after an update rather than editing them.
+The type declarations in `.claude/types/claude-code.d.ts` come from the `/plugin-types` command inside Claude Code, so after an update, regenerate them instead of editing them by hand.
 
 ```
 npm install
@@ -65,7 +66,7 @@ claude plugin validate plugins/quota-meter
 ```
 
 The function hooks API is early access and may change between Claude Code releases.
-Anthropic's own mods, which these copy their structure from, live at https://github.com/anthropics/claude-code/tree/main/mods.
+These mods follow the structure of Anthropic's own mods, which are at https://github.com/anthropics/claude-code/tree/main/mods.
 
 ## License
 

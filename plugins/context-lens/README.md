@@ -2,19 +2,19 @@
 
 A live `/context`.
 
-Claude Code's `/context` is a snapshot you have to ask for.
-`context-lens` keeps the same figures on screen: a pinned line under the prompt that updates after every turn, and a pane with the window broken down by category.
+Claude Code's `/context` only shows the context window when you ask for it.
+`context-lens` keeps the same figures on screen in a pinned line under the prompt that updates after every turn, plus a pane that breaks the window down by category.
 
 ## What it shows
 
-A pinned status line under the prompt, from the moment the session starts:
+The pinned status line sits under the prompt from the start of the session:
 
 ```
 ctx 5% · 45.9k/1.0M · +44 last turn · 99+ turns to full
 ```
 
-Reading it left to right: how full the context window is, the tokens used against the window size, what the last turn added, and how many more turns fit at the recent average growth.
-Any figure the engine has not reported yet is left out rather than guessed, so early in a session the line is shorter.
+From left to right it shows how full the context window is, the tokens used out of the window size, what the last turn added, and how many more turns fit at the recent average growth.
+Figures the engine has not reported yet are left out, so the line is shorter early in a session.
 Before the first answer comes back it reads `ctx waiting for the first answer`.
 
 `/context-lens` opens a pane with the same reading in full:
@@ -36,7 +36,7 @@ limit           800k, where auto-compaction runs
 counted         locally, as an estimate - /context-lens refresh counts exactly
 ```
 
-Each bar is sized to the pane's own width, so it fits the dock and the inline placement alike.
+Each bar is sized to the pane's width, so it fits whether the pane is docked or inline.
 
 Running `/context-lens` again closes the pane.
 `/context-lens refresh` counts every category with the token-count API, the way `/context` does, and says so in the `counted` row.
@@ -49,13 +49,14 @@ Everything comes from one call, `$.session.usage`.
 
 After each finished turn the mod asks for `breakdown: "summary"`, which estimates locally and sends no requests, so the line costs nothing.
 `/context-lens refresh` asks for `breakdown: "full"`, which sends one token-count request per tool and memory file.
-That is the only thing in this mod that spends anything, and it only runs when you ask for it.
+That is the only part of this mod that costs anything, and it only runs when you ask.
 
 The growth figures come from a small in-memory list of the token count after each turn.
-A compaction clears it, since the window it measured no longer exists.
+A compaction clears that list, because the window it measured is gone.
 
 The compaction line prefers the engine's own `autoCompactThreshold` from the breakdown.
-When auto-compaction is off it falls back to the compaction window (`rawMaxTokens`), and when there is no breakdown at all it falls back to the context window size and says which it used, so the number is never presented as more than it is.
+When auto-compaction is off it uses the compaction window (`rawMaxTokens`) instead.
+With no breakdown at all it uses the context window size, and in each case it says which number it used.
 
 ## Install
 
@@ -91,6 +92,8 @@ CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir plugins/context-lens
 Claude Code 2.1.272 and later answer it with the categories and the auto-compaction threshold, and the pane draws them.
 Claude Code 2.1.270 and earlier answer with only `tokens`, `window` and `percent`, so on those builds the pane draws the window bar alone, says so in place of the category rows, and measures headroom against the whole window.
 - `tokens` and `percent` come from the last API response, so a fresh or just-compacted session has no reading until its next answer.
-- The turns estimate is a straight line through the recent turns that grew. One large file read moves it a long way; it is a rough guide, not a forecast.
-- The pane is placed by the engine: docked beside the transcript in the fullscreen layout from 110 columns, inline above the prompt otherwise. Inline it gets about a third of the screen, so a long category list scrolls.
-- One pinned status line per plugin, and the engine draws it with its own notice mark.
+- The turns estimate is a straight line through the recent turns that grew.
+  One large file read moves it a long way, so treat it as a rough guide.
+- The engine decides where the pane goes.
+  In the fullscreen layout from 110 columns it docks beside the transcript; otherwise it sits inline above the prompt, gets about a third of the screen, and a long category list scrolls.
+- Each plugin gets one pinned status line, which the engine draws with its own notice mark.

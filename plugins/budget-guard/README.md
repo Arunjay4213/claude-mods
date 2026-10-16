@@ -2,29 +2,29 @@
 
 A spending guard for Claude Code, built as a mod (function hooks).
 
-It watches three figures, each with a limit you set, and stops work before the limit turns into a surprise:
+It watches three figures against limits you set and stops work when one is passed:
 
 - the session cost in dollars,
 - how much of the 5-hour plan window is used,
 - how much of the 7-day plan window is used.
 
-It stays invisible while everything is fine.
-No status line, no toasts, nothing.
+While everything is under the warning mark it shows nothing at all.
 
 ## What it does
 
-**At 80% of a limit** it toasts once and pins a line under the prompt:
+At 80% of a limit it shows a toast once and pins a line under the prompt:
 
 ```
 budget-guard: cost $4.10/$5.00 82% · 5h 71/90% · 7d 15/95%
 ```
 
-The line stays while any figure is at warn or over, and disappears the moment everything is back under the warn mark.
-The toast is not repeated until the level changes.
+The line stays while any figure is at the warning level or over, and goes away as soon as everything is back under it.
+The toast only repeats when the level changes.
 
-**Past a limit, in `block` mode (the default)**, two things happen.
+Past a limit in `block` mode, which is the default, two things happen.
 
-The next tool call is refused, including a subagent's, because subagents spend too, and the turn is stopped, because a model that is refused one tool tries another and every try is a billed API call:
+First, the next tool call is refused (a subagent's too, since subagents also spend) and the turn is stopped.
+Stopping the turn matters because a model that is refused one tool tries another, and every attempt is a billed API call:
 
 ```
 ● Bash(echo c)
@@ -32,7 +32,7 @@ The next tool call is refused, including a subagent's, because subagents spend t
      /guard override allows the next turn; /guard cost 2 raises the limit.
 ```
 
-And sending a new prompt asks first:
+Second, sending a new prompt asks you first:
 
 ```
  ☐ Budget
@@ -49,8 +49,8 @@ Session cost is $0.59, past its $0.36 limit. Send this prompt anyway?
   The prompt was not sent. /guard override sends the next one; /guard cost 1 raises the limit.
 ```
 
-**Past a limit, in `warn` mode**, nothing is ever refused.
-The guard toasts once a turn and keeps the status line pinned, and that is all.
+Past a limit in `warn` mode, nothing is refused.
+The guard shows one toast per turn and keeps the status line pinned.
 
 ## Install
 
@@ -74,7 +74,7 @@ Or set it for one run: `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude`.
 
 ## `/guard`
 
-Run `/guard` on its own to see where everything stands:
+`/guard` with no arguments prints the current state:
 
 ```
 budget-guard: on, in block mode. It warns at 80% of a limit.
@@ -109,50 +109,48 @@ The six settings are the plugin's own `userConfig` fields, so `/config` shows th
 | `mode` | `block` | `block` refuses work past a limit, `warn` only says so. |
 | `enabled` | `true` | Turn the whole guard off without uninstalling it. |
 
-Changing one with `/guard` writes it through `$.config.set`, which lands in `~/.claude/settings.json` under `pluginConfigs["budget-guard"].options`, so it survives a restart.
-Claude Code reloads the module when its options change, which is why `/guard cost 5` is followed by a short "options changed - reloaded" notice.
+Changing one with `/guard` writes it through `$.config.set` into `~/.claude/settings.json` under `pluginConfigs["budget-guard"].options`, so it survives a restart.
+Claude Code reloads the module whenever its options change, and that reload is the short "options changed - reloaded" notice you see after `/guard cost 5`.
 
-If a host ever refuses a plugin writing its own `userConfig` row, the guard falls back to `$.store` for the same six fields and `/guard` says "Kept in the plugin store" instead of "Kept in the plugin settings".
-On the Claude Code build this was written against (2.1.272) the `$.config.set` path works, so the store fallback is the unusual case.
+If a host refuses to let a plugin write its own `userConfig` row, the guard keeps the same six fields in `$.store` instead, and `/guard` says "Kept in the plugin store" where it would otherwise say "Kept in the plugin settings".
+The `$.config.set` path works on the Claude Code build this was written against (2.1.272), so the fallback should be rare.
 
 ## Where the numbers come from
 
-Everything is read with `$.session.usage()` and no argument, which is the free form: it reports the figures the last API response already carried, and computes nothing.
+Everything is read with `$.session.usage()` called with no argument.
+That form is free, because it only reports the figures the last API response already carried.
 
 - `cost.usd` is the same dollar figure `/cost` and the status line show.
 - `rateLimits[]` carries `five_hour` and `seven_day` with a `percentUsed`, rounded here with `Math.round`.
 
-The reading is taken at `session.start`, after every turn, and inside `tool.call` before the guard decides, because cost keeps moving while a turn runs.
+It reads at `session.start`, after every turn, and inside `tool.call` just before deciding, since cost keeps moving during a turn.
 
-The `tool.call` read is measured once per session and the figure is written to the debug log:
+The guard times the `tool.call` read once per session and writes the result to the debug log:
 
 ```
 [budget-guard] $.ui.log: session.usage() took 5 ms in tool.call - under 30 ms, so every check reads live
 ```
 
-If the read comes back slower than 30 ms the guard caches it for 3 seconds instead of reading on every tool call.
-Both paths were seen in testing: 5 ms on a cold worker and 62 ms on a reloaded one, where the cache switched itself on.
+If the read takes longer than 30 ms, the guard caches it for 3 seconds instead of reading on every tool call.
+Both cases showed up in testing: 5 ms on a cold worker, and 62 ms on a reloaded one, where the cache turned itself on.
 
 ## Limitations
 
-**A hook that throws or times out is skipped by the engine.**
-The hooks beneath it and Claude Code's own logic run in its place.
-That makes this a guard rail, not a lock: it is here to stop an expensive session from drifting past a budget you set, not to enforce a spending policy on someone who does not want it.
-Anyone can turn it off with `/guard off`.
+When a hook throws or times out, the engine skips it and runs the hooks beneath it and Claude Code's own logic instead.
+So the guard can fail open.
+It is meant to keep an expensive session from drifting past a budget you chose, and it cannot enforce a spending policy on someone who does not want one; anyone can run `/guard off`.
 
-**The deny is advisory in one specific sense.**
-It refuses the *next* tool call and then stops the turn.
-API calls that have already started still finish and are still billed, so the cost can land a little past the limit before anything is refused.
+The refusal applies to the *next* tool call, after which the turn stops.
+API calls that have already started still finish and are billed, so cost can end up a little past the limit before anything is refused.
 In practice the overshoot is one model step.
 
-**API-key sessions have no window guards.**
-`rateLimits` is empty without a subscription, so the 5-hour and 7-day figures are never reported and those two guards stay inactive.
-`/guard` says so plainly, and the cost guard still works.
+API-key sessions get no window guards.
+`rateLimits` is empty without a subscription, so the 5-hour and 7-day figures never arrive and those two guards stay inactive.
+`/guard` says this, and the cost guard still works.
 
-**Cost settles between steps, not continuously.**
-The engine's cost ledger updates as each API response is accounted for, so a short single-step turn can end past the limit without any tool call having been refused.
-The next turn is then caught at `prompt.submit`.
+The engine's cost ledger updates as each API response is accounted for, between steps.
+A short single-step turn can therefore end past the limit without any tool call being refused, and the next turn is caught at `prompt.submit`.
 
-**`$.ui.ask` needs someone to ask.**
-In a `-p` or SDK run there is no one at the keyboard, so a prompt submitted while a figure is over is dropped with the reason rather than questioned.
-`/guard override` or a higher limit is the way through.
+`$.ui.ask` needs a person at the keyboard.
+In a `-p` or SDK run there is nobody to ask, so a prompt submitted while a figure is over is dropped with the reason.
+To get past it, use `/guard override` or raise the limit.
